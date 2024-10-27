@@ -7,10 +7,10 @@ from airflow.hooks.postgres_hook import PostgresHook
 
 
 default_args={
-    "email": ["nosovva@mts.ru"],
+    "email": ["**********"],
     "email_on_failure": True,
     'start_date': "2024-09-24",
-    "ssh_conn_id": "fob2b-en-001.msk.bd-cloud.mts.ru",
+    "ssh_conn_id": "***********",
     'provide_context' : True,
     'schedule_interval': '@monthly'
 }
@@ -40,7 +40,7 @@ with DAG (
 
         notify_email = EmailOperator(
             task_id='send_email',
-            to='nosovva@mts.ru',
+            to='**********',
             subject='Data Load cvm_srv Notification',
             html_content="""<h3>Data Load Complete</h3> 
 <p>{{ task_instance.xcom_pull(task_ids='load_data') }} rows were loaded.</p>""")
