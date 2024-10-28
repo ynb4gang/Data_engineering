@@ -16,7 +16,7 @@ default_args={
 }
 
 def extract_data_to_csv(): 
-    pg_hook = PostgresHook(postgres_conn_id='dwh_gp')
+    pg_hook = PostgresHook(postgres_conn_id='******')
     df = pg_hook.get_pandas_df(sql="SELECT * FROM **********")
     csv_path = '/data/airflow/dags/cvm-srv.csv'
     df.to_csv(csv_path, sep=';', index=False)
