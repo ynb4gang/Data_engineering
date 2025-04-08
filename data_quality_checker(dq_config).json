@@ -1,0 +1,93 @@
+{
+  "tables": [
+    {
+      "table_name": "hive.db.client_transactions",
+      "checks": [
+        {
+          "type": "empty_check",
+          "enabled": true
+        },
+        {
+          "type": "null_check",
+          "enabled": true,
+          "columns": ["transaction_id", "account_id", "amount", "transaction_date"]
+        },
+        {
+          "type": "unique_check",
+          "enabled": true,
+          "columns": ["transaction_id"]
+        },
+        {
+          "type": "cardinality_check",
+          "enabled": true,
+          "column": "account_id",
+          "min": 1000,
+          "max": 100000
+        },
+        {
+          "type": "min_max_check",
+          "enabled": true,
+          "column": "amount",
+          "min": 0.0,
+          "max": 10000000.0
+        },
+        {
+          "type": "custom_rule",
+          "enabled": true,
+          "rule": "amount >= 0 AND amount <= 10000000 AND transaction_type IN ('DEBIT', 'CREDIT')"
+        }
+      ],
+      "sla_threshold_sec": 1800,
+      "alerting": {
+        "enabled": true,
+        "channels": ["slack", "email"],
+        "prometheus_export": true,
+        "airflow_task_id": "dq_check_transactions"
+      }
+    },
+    {
+      "table_name": "hive.db.customer_profile",
+      "checks": [
+        {
+          "type": "empty_check",
+          "enabled": true
+        },
+        {
+          "type": "null_check",
+          "enabled": true,
+          "columns": ["customer_id", "first_name", "last_name", "birth_date"]
+        },
+        {
+          "type": "unique_check",
+          "enabled": true,
+          "columns": ["customer_id"]
+        },
+        {
+          "type": "custom_rule",
+          "enabled": true,
+          "rule": "birth_date < current_date() AND LENGTH(first_name) > 1"
+        }
+      ],
+      "sla_threshold_sec": 1200,
+      "alerting": {
+        "enabled": true,
+        "channels": ["email"],
+        "prometheus_export": true
+      }
+    }
+  ],
+  "output": {
+    "report_sink": "hive",
+    "report_table": "hive.dq.dq_reports",
+    "report_mode": "append"
+  },
+  "logging": {
+    "level": "INFO",
+    "log_path": "/logs/data_quality_checker/"
+  },
+  "execution": {
+    "parallel": true,
+    "fail_fast": false,
+    "max_concurrent_checks": 5
+  }
+}
